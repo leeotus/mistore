@@ -2,7 +2,7 @@
 // | MobileCms 移动应用软件后台管理系统
 // +----------------------------------------------------------------------
 // | provide by ：59miao.com
-// 
+//
 // +----------------------------------------------------------------------
 // | Author: htzhanglong@foxmail.com
 // +----------------------------------------------------------------------
@@ -35,7 +35,7 @@ body {
 	width:280px;
 	height:30px;
 	line-height:30px;
-	
+
 }
 #login dl dd input.submit {
 	background: url("../images/login_btn.jpg") no-repeat center center;
@@ -54,13 +54,13 @@ body {
 	border:1px solid #eee;
 	cursor:pointer;
 }
-#verify{	
+#verify{
 	height:30px;
-	line-height:30px;	  
+	line-height:30px;
     width: 90px;
 	margin-right:3px;
 }
-#verify_img{
+#captchaImg{
 	cursor:pointer;
     position: relative;
     top:12px;
@@ -76,5 +76,5 @@ body {
 	padding-top:10px;
 	color:#01458e;
 	font-weight:bold;
-	
+
 }

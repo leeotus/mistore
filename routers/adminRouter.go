@@ -15,6 +15,7 @@ func AdminRouterInit(r *gin.Engine) {
 
 		// 登录界面
 		admin_router.GET("/login", admin.LoginController{}.Index)
+		admin_router.GET("/code", admin.LoginController{}.GenerateCode)
 		admin_router.POST("/doLogin", admin.LoginController{}.DoLogin)
 
 		// 管理员界面

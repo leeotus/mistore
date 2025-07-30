@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"mistore/routers"
 	"net/http"
 	"os"
@@ -11,7 +10,6 @@ import (
 )
 
 func main() {
-	fmt.Println("hello world")
 	r := gin.Default()
 	r.SetFuncMap(template.FuncMap{})
 
