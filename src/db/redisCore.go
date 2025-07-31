@@ -14,17 +14,18 @@ import (
 
 var RedisDB *redis.Client
 
-func init() {
+func RedisCoreInit(addr, port, pwd string, db, maxpool, minIdleConns int, maxConnAge, idleTimeout time.Duration) {
+	host := fmt.Sprintf("%s:%s", addr, port)
 	RedisDB = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379", // Redis地址
-		Password: "",               // 密码
-		DB:       0,                // 默认采用的数据库编号
+		Addr:     host, // Redis地址
+		Password: pwd,  // 密码
+		DB:       db,   // 默认采用的数据库编号
 
 		// 连接池配置
-		PoolSize:     12,                // 最大活跃连接数
-		MinIdleConns: 2,                 // 最小空闲连接数
-		MaxConnAge:   300 * time.Second, // 连接的最大存活时间
-		IdleTimeout:  60 * time.Second,  // 空闲连接的超时时间
+		PoolSize:     maxpool,      // 最大活跃连接数
+		MinIdleConns: minIdleConns, // 最小空闲连接数
+		MaxConnAge:   maxConnAge,   // 连接的最大存活时间
+		IdleTimeout:  idleTimeout,  // 空闲连接的超时时间
 	})
 
 	// 测试连接

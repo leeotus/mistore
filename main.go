@@ -1,15 +1,35 @@
 package main
 
 import (
+	"fmt"
 	"mistore/routers"
+	"mistore/src/db"
+	"mistore/src/models"
 	"net/http"
 	"os"
 	"text/template"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	loader := &models.IniLoader{}
+	loader.LoadConfigs("./config/mistore.ini")
+	db.MysqlCoreInit(loader.MysqlConfig.Username,
+		loader.MysqlConfig.Password,
+		loader.MysqlConfig.HostAddr,
+		loader.MysqlConfig.Port,
+		loader.MysqlConfig.DBName)
+
+	fmt.Println("loader.RedisConfig.Host:", loader.RedisConfig.Host)
+	fmt.Println("loader.RedisConfig.Port:", loader.RedisConfig.Port)
+	fmt.Println("loader.RedisConfig.Password:", loader.RedisConfig.Password)
+	db.RedisCoreInit(loader.RedisConfig.Host,
+		loader.RedisConfig.Port,
+		loader.RedisConfig.Password,
+		0, 12, 2, 300*time.Second, 60*time.Second)
+
 	r := gin.Default()
 	r.SetFuncMap(template.FuncMap{})
 

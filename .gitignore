@@ -34,7 +34,7 @@ go.work.sum
 /.vscode
 /.idea
 /tmp
-/config/init.ini
+/config/mistore.ini
 null
 /tests
 mistore.sql
