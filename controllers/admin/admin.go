@@ -1,14 +1,13 @@
 package admin
 
 import (
-	"mistore/controllers"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type AdminController struct {
-	controllers.BaseController
+	BaseController
 }
 
 // TODO: 管理员主页

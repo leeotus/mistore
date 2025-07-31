@@ -6,7 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type MainPageController struct{}
+type MainPageController struct {
+	BaseController
+}
 
 func (ctl MainPageController) Index(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "admin/mainpage/index.html", gin.H{})

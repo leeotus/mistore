@@ -1,15 +1,16 @@
-package db
+package verify
 
 import (
 	"context"
 	"fmt"
+	"mistore/src/db"
 	"time"
 )
 
 /**
  * @brief 在这里去实现base64Captcha.Store接口,使得之后可以直接用来适配
+ * @note captchaStore用来指定captcha使用redi作为存储引擎
  */
-
 var ctx = context.Background()
 
 const CAPTCHA = "captcha:"
@@ -19,7 +20,7 @@ type RedisStore struct{}
 // @brief 设置captcha
 func (r RedisStore) Set(id string, value string) error {
 	key := CAPTCHA + id
-	err := RedisDB.Set(ctx, key, value, time.Minute*2).Err()
+	err := db.RedisDB.Set(ctx, key, value, time.Minute*2).Err()
 	return err
 }
 
@@ -30,13 +31,13 @@ func (r RedisStore) Set(id string, value string) error {
  */
 func (r RedisStore) Get(id string, clear bool) string {
 	key := CAPTCHA + id
-	val, err := RedisDB.Get(ctx, key).Result()
+	val, err := db.RedisDB.Get(ctx, key).Result()
 	if err != nil {
 		fmt.Println(err)
 		return ""
 	}
 	if clear {
-		err := RedisDB.Del(ctx, key).Err()
+		err := db.RedisDB.Del(ctx, key).Err()
 		if err != nil {
 			fmt.Println(err)
 			return ""

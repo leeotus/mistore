@@ -2,7 +2,6 @@ package verify
 
 import (
 	"image/color"
-	"mistore/src/db"
 
 	"github.com/mojocn/base64Captcha"
 )
@@ -14,7 +13,7 @@ import (
  */
 
 // var store = base64Captcha.DefaultMemStore
-var store base64Captcha.Store = db.RedisStore{}
+var store base64Captcha.Store = RedisStore{}
 
 /**
  * @brief 生成验证码

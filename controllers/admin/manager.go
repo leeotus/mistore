@@ -1,7 +1,6 @@
 package admin
 
 import (
-	"mistore/controllers"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,7 +12,7 @@ import (
  */
 
 type ManagerController struct {
-	controllers.BaseController
+	BaseController
 }
 
 // TODO: 管理员界面下的各种操作

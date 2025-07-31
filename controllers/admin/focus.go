@@ -1,7 +1,6 @@
 package admin
 
 import (
-	"mistore/controllers"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,7 +12,7 @@ import (
  */
 
 type FocusController struct {
-	controllers.BaseController
+	BaseController
 }
 
 func (ctl FocusController) Index(ctx *gin.Context) {
