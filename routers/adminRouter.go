@@ -2,12 +2,13 @@ package routers
 
 import (
 	"mistore/controllers/admin"
+	"mistore/src/middlewares"
 
 	"github.com/gin-gonic/gin"
 )
 
 func AdminRouterInit(r *gin.Engine) {
-	admin_router := r.Group("/admin")
+	admin_router := r.Group("/admin", middlewares.InitAdminAuthMiddleware)
 
 	{
 		admin_router.GET("/", admin.MainPageController{}.Index)

@@ -47,7 +47,7 @@ func (ctl LoginController) DoLogin(c *gin.Context) {
 			sessionId := models.GenerateSessionUUID()
 
 			// 传入上下文
-			err := userInput.SaveSession(c.Request.Context(), sessionId, user.Username)
+			err := userInput.SaveSession(c.Request.Context(), sessionId, user.Username, user.IsSuper)
 			if err != nil {
 				ctl.error(c, "会话创建失败", "/admin/login")
 				return

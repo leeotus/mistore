@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"mistore/routers"
 	"mistore/src/db"
 	"mistore/src/models"
@@ -22,16 +21,16 @@ func main() {
 		loader.MysqlConfig.Port,
 		loader.MysqlConfig.DBName)
 
-	fmt.Println("loader.RedisConfig.Host:", loader.RedisConfig.Host)
-	fmt.Println("loader.RedisConfig.Port:", loader.RedisConfig.Port)
-	fmt.Println("loader.RedisConfig.Password:", loader.RedisConfig.Password)
 	db.RedisCoreInit(loader.RedisConfig.Host,
 		loader.RedisConfig.Port,
 		loader.RedisConfig.Password,
 		0, 12, 2, 300*time.Second, 60*time.Second)
 
 	r := gin.Default()
-	r.SetFuncMap(template.FuncMap{})
+	r.SetFuncMap(template.FuncMap{
+		"Md5":  models.Md5,
+		"UUID": models.GenerateSessionUUID,
+	})
 
 	r.Static("admin/bootstrap/", "static/admin/bootstrap/")
 	r.Static("admin/css/", "static/admin/css")
