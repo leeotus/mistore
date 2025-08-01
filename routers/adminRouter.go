@@ -31,5 +31,13 @@ func AdminRouterInit(r *gin.Engine) {
 		admin_router.GET("/focus/add", admin.FocusController{}.Add)
 		admin_router.GET("/focus/edit", admin.FocusController{}.Edit)
 		admin_router.GET("/focus/delete", admin.FocusController{}.Delete)
+
+		// 权限视图
+		admin_router.GET("/role", admin.RoleController{}.Index)
+		admin_router.GET("/role/add", admin.RoleController{}.Add)
+		admin_router.GET("/role/edit", admin.RoleController{}.Edit)
+		admin_router.GET("/role/delete", admin.RoleController{}.Delete)
+		admin_router.POST("/role/doAdd", admin.RoleController{}.DoAdd)
+		admin_router.POST("/role/doEdit", admin.RoleController{}.DoEdit)
 	}
 }

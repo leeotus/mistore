@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"mistore/src/db"
 	"mistore/src/verify"
-	"time"
 )
 
 // @note 用户登录表单数据
@@ -33,7 +32,7 @@ func (data *LoginData) LogIn() (bool, *Manager) {
 
 	// 密码需要做加密操作
 	pwd := Md5(data.Password)
-	res := db.DB.Where("username=? AND password=?", data.Username, pwd).Find(&userinfo)
+	res := db.MySQLDB.Where("username=? AND password=?", data.Username, pwd).Find(&userinfo)
 	if res.RowsAffected <= 0 || len(userinfo) <= 0 {
 		return false, nil
 	}
@@ -51,14 +50,13 @@ func (data *LoginData) LogIn() (bool, *Manager) {
  * @note 后续用户的操作与执行需要判断Session是否过期,过期则需要重新登录,否则操作执行并更新Session
  */
 func (data *LoginData) SaveSession(ctx context.Context, sessionId string, sessionVal string, super_user int) error {
-	key := fmt.Sprintf("session:%s", sessionId)
+	key := fmt.Sprintf("%s%s", SESSION_PREFIX, sessionId)
 
-	err := db.RedisDB.HSet(ctx, key,
-		"session_val", sessionVal,
-		"login_time", time.Now().Unix(),
-		"super_user", super_user).Err()
-	if err != nil {
-		return err
+	sessData := map[string]any{
+		"session_val": sessionVal,
+		"login_time":  TimeStamp(),
+		"super_user":  super_user,
 	}
-	return db.RedisDB.Expire(ctx, key, 1*time.Hour).Err()
+
+	return SetSession(ctx, key, sessData)
 }

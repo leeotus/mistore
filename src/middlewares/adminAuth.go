@@ -1,9 +1,10 @@
 package middlewares
 
 import (
-	"mistore/src/db"
+	"mistore/src/models"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -31,7 +32,7 @@ func InitAdminAuthMiddleware(ctx *gin.Context) {
 
 	// RESEARCH: 将SessionID保存在客户端的Cookie中,如何才能最大限度的保证安全呢?
 	// 获取用户的Session信息
-	sessionId, err := ctx.Cookie("session_id")
+	sessionId, err := ctx.Cookie(models.COOKIE_SESSNAME)
 	if err != nil || sessionId == "" {
 		// 没有找到session_id,需要重定向到登录页
 		ctx.Redirect(http.StatusFound, "/admin/login")
@@ -39,27 +40,24 @@ func InitAdminAuthMiddleware(ctx *gin.Context) {
 		return
 	}
 
-	// 从redis中获取用户的信息
-	redisKey := "session:" + sessionId
-	userId, err := db.RedisDB.HGet(ctx, redisKey, "session_val").Result()
-	if err != nil || userId == "" {
+	// 用新Session类获取session数据
+	sessKey := models.SESSION_PREFIX + sessionId
+	sessData, err := models.GetSession(ctx, sessKey)
+	if err != nil || sessData == nil {
 		// Session不存在或者已经过期,需要重定向到登录页面
 		ctx.Redirect(http.StatusFound, "/admin/login")
 		ctx.Abort()
 		return
 	}
 
-	// 验证是否为管理员身份,admin界面只向管理员开放
-	isSuper, _ := db.RedisDB.HGet(ctx, redisKey, "super_user").Result()
-	isAdmin := checkIsAdmin(isSuper)
-	if !isAdmin {
+	// 滑动过期：每次操作距离上次刷新超过3分钟才刷新session过期时间
+	models.RefreshSessionWithInterval(ctx, sessKey, sessData, 3*time.Minute)
+
+	isSuper, _ := sessData["super_user"].(float64) // json解码数字为float64
+	if int(isSuper) != 1 {
 		ctx.String(http.StatusForbidden, "请联系管理员获取权限!")
 		ctx.Abort()
 		return
 	}
 	ctx.Next()
-}
-
-func checkIsAdmin(issuper string) bool {
-	return issuper == "1"
 }
