@@ -70,3 +70,9 @@ func Int2Str(num int) string {
 	str := strconv.Itoa(num)
 	return str
 }
+
+// @brief 获取年月日
+func GetDay() string {
+	template := "20060102"
+	return time.Now().Format(template)
+}
