@@ -49,20 +49,19 @@ func (ctl LoginController) DoLogin(c *gin.Context) {
 			// 传入上下文
 			err := userInput.SaveSession(c.Request.Context(), sessionId, user.Username, user.IsSuper)
 			if err != nil {
-				ctl.error(c, "会话创建失败", "/admin/login")
+				ctl.Error(c, "会话创建失败", "/admin/login")
 				return
 			}
 
 			// 将SessionID写入到Cookie,发送给客户端
-			fmt.Println("SessionID:", sessionId)
-			c.SetCookie("session_id", sessionId, 3600, "/", "localhost", false, true)
+			c.SetCookie(models.COOKIE_SESSNAME, sessionId, 3600, "/", "localhost", false, true)
 
-			ctl.success(c, "登录成功", "/admin")
+			ctl.Success(c, "登录成功", "/admin")
 		} else {
-			ctl.error(c, "用户名或密码错误", "/admin/login")
+			ctl.Error(c, "用户名或密码错误", "/admin/login")
 		}
 	} else {
-		ctl.error(c, "验证码验证失败", "/admin/login")
+		ctl.Error(c, "验证码验证失败", "/admin/login")
 	}
 }
 
@@ -70,11 +69,11 @@ func (ctl LoginController) DoLogin(c *gin.Context) {
  * @brief 登出操作
  */
 func (ctl LoginController) LoginOut(c *gin.Context) {
-	sessionId, err := c.Cookie("session_id")
+	sessionId, err := c.Cookie(models.COOKIE_SESSNAME)
 
 	// 删除该用户的Session
 	if err == nil && len(sessionId) != 0 {
-		redisKey := fmt.Sprintf("session:%s", sessionId)
+		redisKey := fmt.Sprintf("%s%s", models.SESSION_PREFIX, sessionId)
 
 		ctx := c.Request.Context()
 		_, delErr := db.RedisDB.Del(ctx, redisKey).Result()
@@ -85,7 +84,7 @@ func (ctl LoginController) LoginOut(c *gin.Context) {
 
 	// 清除客户端的session_id Cookie
 	// NOTE: 设置Cookie值为空表示删除
-	c.SetCookie("session_id", "", -1, "/", "localhost", false, true)
+	c.SetCookie(models.COOKIE_SESSNAME, "", -1, "/", "localhost", false, true)
 
 	// 重定向:
 	c.Redirect(http.StatusFound, "/admin/login")

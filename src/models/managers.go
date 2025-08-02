@@ -13,6 +13,7 @@ type Manager struct {
 	RoleId   int    `json:"roleid"`
 	AddTime  int    `json:"addtime"`
 	IsSuper  int    `json:"super"`
+	Role     Role   `gorm:"foreignKey:RoleId"`
 }
 
 func (Manager) TableName() string {

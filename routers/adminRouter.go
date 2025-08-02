@@ -25,6 +25,7 @@ func AdminRouterInit(r *gin.Engine) {
 		admin_router.GET("/manager/add", admin.ManagerController{}.Add)
 		admin_router.GET("/manager/edit", admin.ManagerController{}.Edit)
 		admin_router.GET("/manager/delete", admin.ManagerController{}.Delete)
+		admin_router.POST("/manager/doAdd", admin.ManagerController{}.DoAdd)
 
 		// 轮播图
 		admin_router.GET("/focus", admin.FocusController{}.Index)

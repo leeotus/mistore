@@ -28,8 +28,10 @@ func main() {
 
 	r := gin.Default()
 	r.SetFuncMap(template.FuncMap{
-		"Md5":  models.Md5,
-		"UUID": models.GenerateSessionUUID,
+		"TimeStamp":  models.TimeStamp,
+		"UnixToTime": models.UnixToTime,
+		"Md5":        models.Md5,
+		"UUID":       models.GenerateSessionUUID,
 	})
 
 	r.Static("admin/bootstrap/", "static/admin/bootstrap/")

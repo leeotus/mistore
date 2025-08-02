@@ -1,13 +1,13 @@
 $(function(){
-    app.init();
+    loginApp.init();
 })
-var app={
+var loginApp={
     init:function(){
         this.getCaptcha()
         this.captchaImgChage()
     },
     getCaptcha:function(){
-        $.get("/admin/code",function(response){
+        $.get("/admin/code?t="+Math.random(),function(response){
             console.log(response)
             $("#captchaId").val(response.captchaId)
             $("#captchaImg").attr("src",response.captchaImage)
