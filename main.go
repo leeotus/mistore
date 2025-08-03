@@ -38,6 +38,7 @@ func main() {
 	r.Static("admin/css/", "static/admin/css")
 	r.Static("admin/js/", "static/admin/js")
 	r.Static("admin/images/", "static/admin/images")
+	r.Static("static/", "static/")
 
 	r.LoadHTMLGlob("templates/**/**/*")
 

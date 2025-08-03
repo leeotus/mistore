@@ -64,7 +64,7 @@ func UploadImg(c *gin.Context, picName string) (string, error) {
 
 func (ctl FocusController) Index(ctx *gin.Context) {
 	focusList := []models.Focus{}
-	db.MySQLDB.Find(&focusList)
+	db.MySQLDB.Order("sort").Find(&focusList)
 	ctx.HTML(http.StatusOK, "admin/focus/index.html", gin.H{
 		"focusList": focusList,
 	})
@@ -109,13 +109,62 @@ func (ctl FocusController) DoAdd(ctx *gin.Context) {
 }
 
 func (ctl FocusController) Edit(ctx *gin.Context) {
-	ctx.HTML(http.StatusOK, "admin/focus/edit.html", gin.H{})
+	id, err1 := models.Str2Int(ctx.Query("id"))
+	if err1 != nil {
+		ctl.Error(ctx, "传入参数错误", "/admin/focus")
+		return
+	}
+	focus := models.Focus{Id: id}
+	db.MySQLDB.Find(&focus)
+	ctx.HTML(http.StatusOK, "admin/focus/edit.html", gin.H{
+		"focus": focus,
+	})
 }
 
 func (ctl FocusController) DoEdit(ctx *gin.Context) {
-	ctx.String(http.StatusOK, "do edit")
+	id, err1 := models.Str2Int(ctx.PostForm("id"))
+	title := ctx.PostForm("title")
+	focusType, err2 := models.Str2Int(ctx.PostForm("focus_type"))
+	link := ctx.PostForm("link")
+	sort, err3 := models.Str2Int(ctx.PostForm("sort"))
+	status, err4 := models.Str2Int(ctx.PostForm("status"))
+
+	if err1 != nil || err2 != nil || err4 != nil {
+		ctl.Error(ctx, "非法请求", "/admin/focus")
+	}
+	if err3 != nil {
+		ctl.Error(ctx, "请输入正确的排序值", "/admin/focus/edit?id="+models.Int2Str(id))
+	}
+
+	// 上传文件
+	focusImg, _ := UploadImg(ctx, "focus_img")
+
+	focus := models.Focus{Id: id}
+	db.MySQLDB.Find(&focus)
+	focus.Title = title
+	focus.FocusType = focusType
+	focus.Link = link
+	focus.Sort = sort
+	focus.Status = status
+	if focusImg != "" {
+		focus.FocusImg = focusImg
+	}
+	err5 := db.MySQLDB.Save(&focus).Error
+	if err5 != nil {
+		ctl.Error(ctx, "修改数据失败请重新尝试!", "/admin/focus/edit?id="+models.Int2Str(id))
+		return
+	}
+	ctl.Success(ctx, "增加轮播图完成", "/admin/focus")
 }
 
 func (ctl FocusController) Delete(ctx *gin.Context) {
-	ctx.String(http.StatusOK, "delete ok")
+	id, err := models.Str2Int(ctx.Query("id"))
+	if err != nil {
+		ctl.Error(ctx, "传入数据错误", "/admin/focus")
+	} else {
+		focus := models.Focus{Id: id}
+		db.MySQLDB.Delete(&focus)
+		// TODO: 是否需要删除保存在upload里的图片
+		ctl.Success(ctx, "删除数据完成!", "/admin/focus")
+	}
 }

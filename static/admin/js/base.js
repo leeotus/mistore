@@ -6,6 +6,7 @@ var baseApp={
         this.initAside()
 		this.confirmDelete()
 		this.resizeIframe()
+        this.changeStatus()
     },
     initAside:function(){
 		$('.aside h4').click(function(){
@@ -22,5 +23,23 @@ var baseApp={
 			var flag=confirm("您确定要删除吗?")
 			return flag
 		})
-	}
+	},
+    changeStatus: function() {
+        $(".chStatus").click(function(){
+            var id = $(this).attr("data-id")
+            var table = $(this).attr("data-table")
+            var field = $(this).attr("data-field")
+            var el = $(this)
+
+            $.get("/admin/changestatus", {id: id, table: table, field: field}, function(response){
+                if(response.success) {
+                    if(el.attr("src").indexOf("yes") != -1) {
+                        el.attr("src", "/admin/images/no.gif")
+                    } else {
+                        el.attr("src", "/admin/images/yes.gif")
+                    }
+                }
+            })
+        })
+    }
 }
