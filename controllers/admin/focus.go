@@ -54,7 +54,7 @@ func UploadImg(c *gin.Context, picName string) (string, error) {
 	}
 
 	// 生成文件名称和文件保存的目录
-	fileName := models.Int2Str(int(models.TimeStamp())) + extName
+	fileName := models.Int2Str(int(models.TimeStampNano())) + extName
 
 	// 上传
 	dst := path.Join(dir, fileName)

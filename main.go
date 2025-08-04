@@ -32,6 +32,7 @@ func main() {
 		"UnixToTime": models.UnixToTime,
 		"Md5":        models.Md5,
 		"UUID":       models.GenerateSessionUUID,
+		"Str2Html":   models.Str2Html,
 	})
 
 	r.Static("admin/bootstrap/", "static/admin/bootstrap/")

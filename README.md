@@ -12,4 +12,6 @@ go get -u github.com/mojocn/base64Captcha
 go get -u github.com/go-redis/redis/v8
 go get -u gopkg.in/ini.v1
 go get -u github.com/google/uuid
+go get -v -u github.com/hunterhug/go_image
+go get -u github.com/skip2/go-qrcode
 ```

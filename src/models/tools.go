@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
+	"html/template"
 	"io"
 	"strconv"
 	"time"
@@ -17,6 +18,13 @@ import (
  */
 func TimeStamp() int64 {
 	return time.Now().Unix()
+}
+
+/**
+ * @brief 当前当前时间的时间戳,纳秒级别
+ */
+func TimeStampNano() int64 {
+	return time.Now().UnixNano()
 }
 
 // 时间戳转换成日期
@@ -61,6 +69,17 @@ func GenerateSessionID() string {
 func Str2Int(str string) (int, error) {
 	num, err := strconv.Atoi(str)
 	return num, err
+}
+
+// @brief 字符串转换为浮点数
+func Str2Float(str string) (float64, error) {
+	n, err := strconv.ParseFloat(str, 64)
+	return n, err
+}
+
+// @brief 字符串转换为HTML页面
+func Str2Html(str string) template.HTML {
+	return template.HTML(str)
 }
 
 /**

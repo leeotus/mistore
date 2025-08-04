@@ -66,5 +66,17 @@ func AdminRouterInit(r *gin.Engine) {
 		admin_router.GET("/goodsTypeAttribute/edit", admin.GoodsTypeAttributeController{}.Edit)
 		admin_router.POST("/goodsTypeAttribute/doAdd", admin.GoodsTypeAttributeController{}.DoAdd)
 		admin_router.POST("/goodsTypeAttribute/doEdit", admin.GoodsTypeAttributeController{}.DoEdit)
+
+		// 商品页面
+		admin_router.GET("/goods", admin.GoodsController{}.Index)
+		admin_router.GET("/goods/add", admin.GoodsController{}.Add)
+		admin_router.GET("/goods/changeGoodsImageColor", admin.GoodsController{}.ChangeGoodsImageColor)
+		admin_router.GET("/goods/removeGoodsImage", admin.GoodsController{}.RemoveGoodsImage)
+		admin_router.GET("/goods/goodsTypeAttribute", admin.GoodsController{}.GoodsTypeAttribute)
+		admin_router.GET("/goods/edit", admin.GoodsController{}.Edit)
+		admin_router.GET("/goods/delete", admin.GoodsController{}.Delete)
+		admin_router.POST("/goods/doAdd", admin.GoodsController{}.DoAdd)
+		admin_router.POST("/goods/imageUpload", admin.GoodsController{}.ImageUpload)
+		admin_router.POST("/goods/doEdit", admin.GoodsController{}.DoEdit)
 	}
 }
