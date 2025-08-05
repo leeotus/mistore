@@ -16,7 +16,7 @@ type GoodsController struct {
 	BaseController
 }
 
-const PAGE_SIZE = 5
+const GOODS_PAGE_SIZE = 5
 
 func (con GoodsController) Index(c *gin.Context) {
 	//当前页数
@@ -38,7 +38,7 @@ func (con GoodsController) Index(c *gin.Context) {
 	// fmt.Println("where:", where)
 
 	//每页查询的数量
-	pageSize := PAGE_SIZE
+	pageSize := GOODS_PAGE_SIZE
 	goodsList := []models.Goods{}
 	db.MySQLDB.Where(where).Offset((page - 1) * pageSize).Limit(pageSize).Find(&goodsList)
 

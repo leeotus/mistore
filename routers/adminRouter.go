@@ -78,5 +78,17 @@ func AdminRouterInit(r *gin.Engine) {
 		admin_router.POST("/goods/doAdd", admin.GoodsController{}.DoAdd)
 		admin_router.POST("/goods/imageUpload", admin.GoodsController{}.ImageUpload)
 		admin_router.POST("/goods/doEdit", admin.GoodsController{}.DoEdit)
+
+		// 导航条
+		admin_router.GET("/nav", admin.NavController{}.Index)
+		admin_router.GET("/nav/add", admin.NavController{}.Add)
+		admin_router.GET("/nav/edit", admin.NavController{}.Edit)
+		admin_router.GET("/nav/delete", admin.NavController{}.Delete)
+		admin_router.POST("/nav/doAdd", admin.NavController{}.DoAdd)
+		admin_router.POST("/nav/doEdit", admin.NavController{}.DoEdit)
+
+		// 商场设置
+		admin_router.GET("/setting", admin.SettingController{}.Index)
+		admin_router.POST("/setting/doEdit", admin.SettingController{}.DoEdit)
 	}
 }
