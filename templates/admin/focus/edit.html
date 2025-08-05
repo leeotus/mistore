@@ -22,7 +22,7 @@
                     <li> 轮 播 图:
                         <input type="file" name="focus_img" />
                         {{if ne .focus.FocusImg ""}}
-                        <img src="/{{.focus.FocusImg}}" width="600" />
+                        <img src="{{.focus.FocusImg | FormatImg}}" width="600" />
                         {{end}}
                     </li>
 

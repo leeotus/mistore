@@ -34,7 +34,7 @@
                             <li> <span>分类图片:</span> <input type="file" name="cate_img" /></li>
 
                             {{if ne .goodsCate.CateImg ""}}
-                            <img src="/{{.goodsCate.CateImg}}" size="60" />
+                            <img src="{{.goodsCate.CateImg | FormatImg}}" size="60" />
                             {{end}}
 
                             <li> <span>跳转地址:</span> <input type="text" name="link" class="input"

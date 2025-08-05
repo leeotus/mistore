@@ -1,13 +1,10 @@
 package admin
 
 import (
-	"errors"
 	"fmt"
 	"mistore/src/db"
 	"mistore/src/models"
 	"net/http"
-	"os"
-	"path"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -20,46 +17,6 @@ import (
 
 type FocusController struct {
 	BaseController
-}
-
-const UPLOAD_DIR = "./static/upload/"
-
-var allowExtMap = map[string]bool{
-	".jpg":  true,
-	".png":  true,
-	".jpeg": true,
-	".gif":  true,
-}
-
-func UploadImg(c *gin.Context, picName string) (string, error) {
-	// 获取上传的文件:
-	file, err := c.FormFile(picName)
-	if err != nil {
-		return "", err
-	}
-
-	// 获取后缀名判断是否是图片: .jpg, .png, .gif, .jpeg
-	extName := path.Ext(file.Filename)
-	if _, ok := allowExtMap[extName]; !ok {
-		return "", errors.New("图片后缀名不合法")
-	}
-
-	// 创建图片保存的目录
-	day := models.GetDay()
-	dir := UPLOAD_DIR + day
-	err = os.MkdirAll(dir, 0666)
-	if err != nil {
-		fmt.Println(err)
-		return "", err
-	}
-
-	// 生成文件名称和文件保存的目录
-	fileName := models.Int2Str(int(models.TimeStampNano())) + extName
-
-	// 上传
-	dst := path.Join(dir, fileName)
-	c.SaveUploadedFile(file, dst)
-	return dst, nil
 }
 
 func (ctl FocusController) Index(ctx *gin.Context) {
