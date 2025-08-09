@@ -90,5 +90,8 @@ func AdminRouterInit(r *gin.Engine) {
 		// 商场设置
 		admin_router.GET("/setting", admin.SettingController{}.Index)
 		admin_router.POST("/setting/doEdit", admin.SettingController{}.DoEdit)
+
+		// 清理缓存
+		admin_router.GET("/flushAll", admin.MainPageController{}.FlushAll)
 	}
 }

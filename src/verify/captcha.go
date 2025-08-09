@@ -48,3 +48,29 @@ func GenerateCaptcha() (id string, b64s string, ans string, err error) {
 func VerifyCaptcha(id string, ans string) bool {
 	return store.Verify(id, ans, true)
 }
+
+// @brief 输入参数生成指定大小的验证码
+func GenerateCaptchaWithInputSize(height int, width int, length int) (string, string, error) {
+	var driver base64Captcha.Driver
+	driverString := base64Captcha.DriverString{
+		Height:          height,
+		Width:           width,
+		NoiseCount:      0,
+		ShowLineOptions: 2 | 4,
+		Length:          length,
+		Source:          "1234567890qwertyuioplkjhgfdsazxcvbnm",
+		BgColor: &color.RGBA{
+			R: 3,
+			G: 102,
+			B: 214,
+			A: 125,
+		},
+		Fonts: []string{"wqy-microhei.ttc"},
+	}
+
+	driver = driverString.ConvertFonts()
+
+	c := base64Captcha.NewCaptcha(driver, store)
+	id, b64s, _, err := c.Generate()
+	return id, b64s, err
+}

@@ -47,6 +47,8 @@ func main() {
 		"UUID":       models.GenerateSessionUUID,
 		"Str2Html":   models.Str2Html,
 		"FormatImg":  admin.FormatImg,
+		"Sub":        models.Sub,
+		"Substr":     models.Substr,
 	})
 
 	r.Static("admin/bootstrap/", "static/admin/bootstrap/")
@@ -67,6 +69,7 @@ func main() {
 	})
 
 	routers.AdminRouterInit(r)
+	routers.DefaultRoutersInit(r)
 
 	r.Run()
 }

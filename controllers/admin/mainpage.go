@@ -51,3 +51,8 @@ func (ctl MainPageController) ChangeStatus(ctx *gin.Context) {
 		"message": "修改成功",
 	})
 }
+
+func (ctl MainPageController) FlushAll(ctx *gin.Context) {
+	db.RedisDB.FlushAll(ctx.Request.Context())
+	ctl.Success(ctx, "清理Redis缓存成功", "/admin")
+}

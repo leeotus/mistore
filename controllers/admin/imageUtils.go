@@ -8,13 +8,17 @@ import (
 	"errors"
 	"fmt"
 	"mime/multipart"
+	"mistore/src/db"
 	"mistore/src/models"
 	"mistore/src/utils"
 	"os"
 	"path"
+	"reflect"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/hunterhug/go_image"
 )
 
 const UPLOAD_DIR = "static/upload/"
@@ -24,6 +28,7 @@ var allowExtMap = map[string]bool{
 	".png":  true,
 	".jpeg": true,
 	".gif":  true,
+	".webp": true,
 }
 
 // @brief 上传图片
@@ -117,4 +122,26 @@ func FormatImg(str string) string {
 	}
 }
 
+func GetSettingFromColum(columnName string) string {
+	setting := models.Setting{}
+	db.MySQLDB.First(&setting)
+
+	v := reflect.ValueOf(setting)
+	val := v.FieldByName(columnName).String()
+	return val
+}
+
 // @brief 商品缩略图
+func ResizeGoodsImage(filename string) {
+	extname := path.Ext(filename)
+	thumbnailSizeSlice := strings.Split(GetSettingFromColum("ThumbnailSize"), ",")
+
+	for i := 0; i < len(thumbnailSizeSlice); i++ {
+		savepath := filename + "_" + thumbnailSizeSlice[i] + "x" + thumbnailSizeSlice[i] + extname
+		w, _ := models.Str2Int(thumbnailSizeSlice[i])
+		err := go_image.ThumbnailF2F(filename, savepath, w, w)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+}

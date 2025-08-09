@@ -1,0 +1,80 @@
+{{ define "api/product/list.html" }}
+
+{{ template "api/public/page_header.html" .}}
+
+{{ template "api/public/middle_nav.html" .}}
+
+<script type="text/javascript" src="/static/admin/js/jqPaginator.js"></script>
+<link rel="stylesheet" href="/static/admin/bootstrap/css/bootstrap.css">
+<!-- start banner_y -->
+<!-- end banner -->
+
+<!-- start danpin -->
+<div class="danpin center">
+
+    <div class="search-filter center">
+        <ul class="item show-less" id="list_item_class">
+            <span> 分类： </span>
+            {{$currentId := .currentCate.Id}}
+            {{range $key,$value := .subCate}}
+            {{if eq $value.Link ""}}
+            {{if eq $currentId $value.Id}}
+            <li><a class="active" href="category{{$value.Id}}">{{$value.Title}}</a></li>
+            {{else}}
+            <li><a href="category{{$value.Id}}">{{$value.Title}}</a></li>
+            {{end}}
+            {{else}}
+            <li><a href="{{$value.Link}}" target="_blank">{{$value.Title}}</a></li>
+            {{end}}
+            {{end}}
+        </ul>
+    </div>
+
+    <div class="main center mb20">
+
+        {{range $key,$value := .goodsList}}
+        <div class="mingxing fl mb20" style="border:2px solid #fff;width:230px;cursor:pointer;"
+            onmouseout="this.style.border='2px solid #fff'" onmousemove="this.style.border='2px solid red'">
+            <div class="sub_mingxing">
+                <a href="detail?id={{ $value.Id }}" target="_self">
+                    <img src="{{$value.GoodsImg | FormatImg}}" alt="{{$value.Title}}" />
+                </a>
+            </div>
+            <div class="pinpai"><a href="detail?id={{ $value.Id }}" target="_self">{{$value.Title}}</a></div>
+
+            <div class="jiage">{{$value.Price}}元</div>
+        </div>
+        {{end}}
+
+
+    </div>
+    <div class="clear"></div>
+
+    <div id="pagination" class="pagination fr">
+    </div>
+</div>
+
+
+<footer class="mt20 center">
+    <div class="mt20">小米商城|MIUI|米聊|多看书城|小米路由器|视频电话|小米天猫店|小米淘宝直营店|小米网盟|小米移动|隐私政策|Select Region</div>
+    <div>©mi.com 京ICP证110507号 京ICP备10046444号 京公网安备11010802020134号 京网文[2014]0059-0009号</div>
+    <div>违法和不良信息举报电话：185-0130-1238，本网站所列数据，除特殊说明，所有数据均出自我司实验室测试</div>
+
+</footer>
+
+<!-- end danpin -->
+
+<!-- 通过data属性传递参数给JavaScript -->
+<div id="pagination" class="pagination fr"
+    data-total-pages="{{.totalPages}}"
+    data-current-page="{{.page}}"
+    data-category-id="{{.currentCate.Id}}">
+</div>
+
+<script type="text/javascript" src="/static/api/js/product-list.js"></script>
+
+</body>
+
+</html>
+
+{{end}}

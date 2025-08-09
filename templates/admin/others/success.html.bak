@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta http-equiv="refresh" content="3;url=http://www.itying.com">
+    <meta http-equiv="refresh" content="3;url=http://www.api.com">
 
     <title>提示信息</title>
     <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
@@ -15,7 +15,7 @@
             <div class="alert alert-success">
                 <h2>操作成功!</h2>
                 <br />
-                <p>如果您不做出选择，将在 3秒后跳转到上一个链接地址</p>                
+                <p>如果您不做出选择，将在 3秒后跳转到上一个链接地址</p>
                 <br />
 
             </div>

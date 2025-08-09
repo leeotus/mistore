@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	mathRand "math/rand"
 	"strconv"
 	"time"
 
@@ -94,4 +95,41 @@ func Int2Str(num int) string {
 func GetDay() string {
 	template := "20060102"
 	return time.Now().Format(template)
+}
+
+func Sub(a int, b int) int {
+	return a - b
+}
+
+// Substr截取字符串
+func Substr(str string, start int, end int) string {
+	rs := []rune(str)
+	rl := len(rs)
+	if start < 0 {
+		start = 0
+	}
+	if start > rl {
+		start = 0
+	}
+
+	if end < 0 {
+		end = rl
+	}
+	if end > rl {
+		end = rl
+	}
+	if start > end {
+		start, end = end, start
+	}
+	return string(rs[start:end])
+}
+
+// @brief 生成随机数
+func GetRandomNum() string {
+	var str string
+	for i := 0; i < 4; i++ {
+		current := mathRand.Intn(10)
+		str += Int2Str(current)
+	}
+	return str
 }

@@ -408,9 +408,15 @@ func (con GoodsController) ImageUpload(c *gin.Context) {
 			"link": "",
 		})
 	} else {
-		c.JSON(http.StatusOK, gin.H{
-			"link": "/" + imgDir,
-		})
+		// 开启OSS:
+		var ossStatus = 1
+		if ossStatus == 1 {
+			c.JSON(http.StatusOK, gin.H{
+				"link": models.Loader.AliOOSConfig.Domain + imgDir,
+			})
+		} else {
+			//TODO
+		}
 	}
 }
 
