@@ -5,6 +5,7 @@ import (
 	"math"
 	"mistore/src/db"
 	"mistore/src/models"
+	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -63,7 +64,7 @@ func (con ProductController) Detail(c *gin.Context) {
 	id, err := models.Str2Int(c.Query("id"))
 
 	if err != nil {
-		c.Redirect(302, "/")
+		c.Redirect(http.StatusFound, "/")
 		c.Abort()
 	}
 

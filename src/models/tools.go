@@ -9,8 +9,10 @@ import (
 	"io"
 	mathRand "math/rand"
 	"strconv"
+	"strings"
 	"time"
 
+	"github.com/gomarkdown/markdown"
 	"github.com/google/uuid"
 )
 
@@ -101,6 +103,10 @@ func Sub(a int, b int) int {
 	return a - b
 }
 
+func Mul(price float64, num int) float64 {
+	return price * float64(num)
+}
+
 // Substr截取字符串
 func Substr(str string, start int, end int) string {
 	rs := []rune(str)
@@ -132,4 +138,16 @@ func GetRandomNum() string {
 		str += Int2Str(current)
 	}
 	return str
+}
+
+func FormatAttr(str string) string {
+
+	tempSlice := strings.Split(str, "\n")
+	var tempStr string
+	for _, v := range tempSlice {
+		md := []byte(v)
+		output := markdown.ToHTML(md, nil, nil)
+		tempStr += string(output)
+	}
+	return tempStr
 }
