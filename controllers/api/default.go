@@ -19,34 +19,35 @@ type DefaultController struct {
 func (con DefaultController) Index(c *gin.Context) {
 	// 1.获取顶部导航
 	topNavList := []models.Nav{}
-	// 查看Redis里有无缓存:
-	if hasTopNavList := db.RedisCache.GetWithCache(c.Request.Context(), "topNavList", &topNavList); !hasTopNavList {
-		// 没有找到Redis里的缓存,则需要到MySQL里查找
+	err := db.RedisCache.GetMultiLevel(c.Request.Context(), "topNavList", &topNavList)
+	if err != nil {
+		// L1+L2都没有命中,查询数据库
 		db.MySQLDB.Where("status=1 AND position=1").Find(&topNavList)
-		// 在MySQL里找完之后需要将数据保存到Redis缓存中
-		db.RedisCache.SetWithContext(c.Request.Context(), "topNavList", topNavList, DEFAULT_EXPIRATION)
+		db.RedisCache.SetMultiLevel(c.Request.Context(), "topNavList", topNavList, db.DEFAULT_REDIS_CACHE_EXPIRATION, db.DEFAULT_LOCAL_CACHE_EXPIRATION)
 	}
 
 	// 2.获取轮播图数据
 	focusList := []models.Focus{}
-	if hasFocusList := db.RedisCache.GetWithCache(c.Request.Context(), "focusList", &focusList); !hasFocusList {
+	err = db.RedisCache.GetMultiLevel(c.Request.Context(), "focusList", &focusList)
+	if err != nil {
 		db.MySQLDB.Where("status=1 AND focus_type=1").Find(&focusList)
-		db.RedisCache.SetWithContext(c.Request.Context(), "focusList", focusList, DEFAULT_EXPIRATION)
+		db.RedisCache.SetMultiLevel(c.Request.Context(), "focusList", focusList, db.DEFAULT_REDIS_CACHE_EXPIRATION, db.DEFAULT_LOCAL_CACHE_EXPIRATION)
 	}
 
 	// 3.获取分类的数据
 	goodsCateList := []models.GoodsCate{}
-	if hasGoodsCateList := db.RedisCache.GetWithCache(c.Request.Context(), "goodsCateList", &goodsCateList); !hasGoodsCateList {
+	err = db.RedisCache.GetMultiLevel(c.Request.Context(), "goodsCateList", &goodsCateList)
+	if err != nil {
 		db.MySQLDB.Where("pid=0 AND status=1").Order("sort DESC").Preload("GoodsCateItems", func(db *gorm.DB) *gorm.DB {
 			return db.Where("goods_cate.status=1").Order("goods_cate.sort DESC")
 		}).Find(&goodsCateList)
-		db.RedisCache.Set("goodsCateList", goodsCateList, DEFAULT_EXPIRATION)
+		db.RedisCache.SetMultiLevel(c.Request.Context(), "goodsCateList", goodsCateList, db.DEFAULT_REDIS_CACHE_EXPIRATION, db.DEFAULT_LOCAL_CACHE_EXPIRATION)
 	}
-	// fmt.Println("goodsCateList:", goodsCateList)
 
 	// 4.获取中间导航
 	middleNavList := []models.Nav{}
-	if hasMiddleNavList := db.RedisCache.GetWithCache(c.Request.Context(), "middleNavList", &middleNavList); !hasMiddleNavList {
+	err = db.RedisCache.GetMultiLevel(c.Request.Context(), "middleNavList", &middleNavList)
+	if err != nil {
 		db.MySQLDB.Where("status=1 AND position=2").Find(&middleNavList)
 
 		for i := 0; i < len(middleNavList); i++ {
@@ -56,21 +57,22 @@ func (con DefaultController) Index(c *gin.Context) {
 			db.MySQLDB.Where("id in ?", relationIds).Select("id,title,goods_img,price").Find(&goodsList)
 			middleNavList[i].GoodsItems = goodsList
 		}
-
-		db.RedisCache.SetWithContext(c.Request.Context(), "middleNavList", middleNavList, DEFAULT_EXPIRATION)
+		db.RedisCache.SetMultiLevel(c.Request.Context(), "middleNavList", middleNavList, db.DEFAULT_REDIS_CACHE_EXPIRATION, db.DEFAULT_LOCAL_CACHE_EXPIRATION)
 	}
 
 	// 手机
 	phoneList := []models.Goods{}
-	if hasPhoneList := db.RedisCache.GetWithCache(c.Request.Context(), "phoneList", &phoneList); !hasPhoneList {
+	err = db.RedisCache.GetMultiLevel(c.Request.Context(), "phoneList", &phoneList)
+	if err != nil {
 		phoneList = models.GetGoodsByCategory(23, "best", 8)
-		db.RedisCache.SetWithContext(c.Request.Context(), "phoneList", phoneList, DEFAULT_EXPIRATION)
+		db.RedisCache.SetMultiLevel(c.Request.Context(), "phoneList", phoneList, db.DEFAULT_REDIS_CACHE_EXPIRATION, db.DEFAULT_LOCAL_CACHE_EXPIRATION)
 	}
 	// 配件
 	otherList := []models.Goods{}
-	if hasOtherList := db.RedisCache.GetWithCache(c.Request.Context(), "otherList", &otherList); !hasOtherList {
+	err = db.RedisCache.GetMultiLevel(c.Request.Context(), "otherList", &otherList)
+	if err != nil {
 		otherList = models.GetGoodsByCategory(9, "all", 1)
-		db.RedisCache.SetWithContext(c.Request.Context(), "otherList", otherList, DEFAULT_EXPIRATION)
+		db.RedisCache.SetMultiLevel(c.Request.Context(), "otherList", otherList, db.DEFAULT_REDIS_CACHE_EXPIRATION, db.DEFAULT_LOCAL_CACHE_EXPIRATION)
 	}
 
 	c.HTML(http.StatusOK, "api/index/index.html", gin.H{

@@ -122,6 +122,8 @@ func (con NavController) DoEdit(c *gin.Context) {
 	if err2 != nil {
 		con.Error(c, "修改数据失败", "/admin/nav/edit?id="+models.Int2Str(id))
 	} else {
+		// 缓存一致性
+		db.RedisDB.Del(c.Request.Context(), "topNavList", "middleNavList")
 		con.Success(c, "修改数据成功", "/admin/nav")
 	}
 
