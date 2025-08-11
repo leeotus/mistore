@@ -8,6 +8,14 @@ import (
 )
 
 func AdminRouterInit(r *gin.Engine) {
+	public := r.Group("/admin")
+	{
+		public.GET("/login", admin.LoginController{}.Index)
+		public.GET("/code", admin.LoginController{}.GenerateCode)
+		public.POST("/doLogin", admin.LoginController{}.DoLogin)
+		public.POST("/refresh-token", admin.LoginController{}.RefreshToken)
+	}
+
 	admin_router := r.Group("/admin", middlewares.InitAdminAuthMiddleware)
 
 	{
@@ -16,9 +24,9 @@ func AdminRouterInit(r *gin.Engine) {
 		admin_router.GET("/changestatus", admin.MainPageController{}.ChangeStatus)
 
 		// 登录界面
-		admin_router.GET("/login", admin.LoginController{}.Index)
-		admin_router.GET("/code", admin.LoginController{}.GenerateCode)
-		admin_router.POST("/doLogin", admin.LoginController{}.DoLogin)
+		// admin_router.GET("/login", admin.LoginController{}.Index)
+		// admin_router.GET("/code", admin.LoginController{}.GenerateCode)
+		// admin_router.POST("/doLogin", admin.LoginController{}.DoLogin)
 		admin_router.GET("/loginOut", admin.LoginController{}.LoginOut)
 
 		// 管理员界面

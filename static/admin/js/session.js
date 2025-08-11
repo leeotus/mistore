@@ -18,21 +18,44 @@ function monitorIframeSession() {
 }
 
 // 监听所有 AJAX 请求的完成事件
+// static/admin/js/session.js
 function monitorAjaxRequests() {
     $(document).ajaxComplete(function(event, xhr, settings) {
-        // 401 状态码表示未授权（Session 失效）
+        // 401状态码表示未授权（JWT失效）
         if (xhr.status === 401) {
             window.location.href = "/admin/login";
         }
-        // 也可以处理 302 重定向的情况（如果中间件返回重定向）
-        else if (xhr.status === 302 && xhr.getResponseHeader("Location") === "/admin/login") {
-            window.location.href = "/admin/login";
+        // 检查响应头中的认证信息
+        const authHeader = xhr.getResponseHeader("Authorization");
+        const refreshToken = xhr.getResponseHeader("X-Refresh-Token");
+        if (authHeader) {
+            localStorage.setItem('authToken', authHeader);
+        }
+        if (refreshToken) {
+            localStorage.setItem('refreshToken', refreshToken);
         }
     });
 }
 
+// 页面加载时检查认证状态
+function checkAuthStatus() {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+        window.location.href = "/admin/login";
+    }
+}
+
+// 页面加载完成后初始化
+$(function() {
+    checkAuthStatus();
+    monitorIframeSession();
+    monitorAjaxRequests();
+});
+
+
 // 页面加载完成后初始化监听
 $(function() {
+    checkAuthStatus()
     monitorIframeSession();
     monitorAjaxRequests();
 });

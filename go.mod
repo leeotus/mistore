@@ -22,6 +22,7 @@ require (
 	github.com/go-redis/redis/v8 v8.11.5 // indirect
 	github.com/go-sql-driver/mysql v1.9.3 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
+	github.com/golang-jwt/jwt/v5 v5.3.0 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/gomarkdown/markdown v0.0.0-20250731182530-5d03d1963446 // indirect
 	github.com/gomarkdown/mdtohtml v0.0.0-20240124153210-d773061d1585 // indirect

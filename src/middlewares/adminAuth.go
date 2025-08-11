@@ -1,10 +1,9 @@
 package middlewares
 
 import (
-	"mistore/src/models"
+	"mistore/src/utils"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,8 +16,11 @@ var NoAuthPaths = []string{
 	"/admin/images/",
 	"/admin/code",
 	"/admin/doLogin",
+	"/admin/refresh-token",
+	"/admin/loginOut",
 }
 
+/*
 func InitAdminAuthMiddleware(ctx *gin.Context) {
 	// 获取用户访问的url
 	pathname := strings.Split(ctx.Request.URL.String(), "?")[0]
@@ -60,4 +62,54 @@ func InitAdminAuthMiddleware(ctx *gin.Context) {
 		return
 	}
 	ctx.Next()
+}
+*/
+
+// src/middlewares/adminAuth.go
+func InitAdminAuthMiddleware(c *gin.Context) {
+	// 获取用户访问的url
+	pathname := strings.Split(c.Request.URL.String(), "?")[0]
+	for _, path := range NoAuthPaths {
+		if strings.HasPrefix(pathname, path) {
+			c.Next() // 直接运行下一个中间件函数
+			return
+		}
+	}
+
+	// 使用JWT认证
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		authHeader = c.GetHeader("X-Auth-Token")
+	}
+	if authHeader == "" {
+		authHeader = c.Request.Header.Get("X-Auth-Token")
+	}
+	if authHeader == "" {
+		c.Redirect(http.StatusFound, "/admin/login")
+		c.Abort()
+		return
+	}
+
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+	claims, err := utils.ValidateToken(tokenString)
+	if err != nil {
+		c.Redirect(http.StatusFound, "/admin/login")
+		c.Abort()
+		return
+	}
+
+	// 检查管理员权限
+	if !claims.IsAdmin {
+		c.String(http.StatusForbidden, "需要管理员权限")
+		c.Abort()
+		return
+	}
+
+	// 设置用户信息到上下文
+	c.Set("user_claims", claims)
+	c.Set("user_id", claims.UserID)
+	c.Set("username", claims.Username)
+	c.Set("is_admin", claims.IsAdmin)
+
+	c.Next()
 }

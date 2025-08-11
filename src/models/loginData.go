@@ -9,10 +9,10 @@ import (
 
 // @note 用户登录表单数据
 type LoginData struct {
-	CapId     string
-	VerifyVal string
-	Username  string
-	Password  string
+	CapId     string `json:"cap_id"`
+	VerifyVal string `json:"verify_val"`
+	Username  string `json:"username"`
+	Password  string `json:"password"`
 }
 
 /**
