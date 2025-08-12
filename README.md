@@ -44,4 +44,5 @@ go get -v -u github.com/hunterhug/go_image
 go get -u github.com/skip2/go-qrcode
 go get -u github.com/aliyun/aliyun-oss-go-sdk/oss
 go get -u github.com/gomarkdown/mdtohtml
+go get -u github.com/golang-jwt/jwt/v5
 ```

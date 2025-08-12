@@ -26,4 +26,9 @@ func (UserCookie) Get(c *gin.Context, key string, obj any) bool {
 	return false
 }
 
+func (UserCookie) Remove(c *gin.Context, key string) bool {
+	c.SetCookie(key, "", -1, "/", c.Request.Host, false, true)
+	return true
+}
+
 var Cookie = &UserCookie{}
