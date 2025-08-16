@@ -12,6 +12,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"mistore/src/mq/rocketmq"
 	"sync"
 	"time"
 
@@ -30,6 +31,8 @@ const (
 	DEFAULT_REDIS_CACHE_EXPIRATION = time.Hour * 2
 	DEFAULT_LRU_CAPACITY           = 10000
 	DEFAULT_CLEANUP_TIMERTICK      = 60 * time.Second
+	CACHE_TOPIC                    = "cache_topic"
+	CACHE_GROUP_NAME               = "GID_CACHE_CONSISTENCY"
 )
 
 type CacheItem struct {
@@ -48,11 +51,12 @@ type RDBCache struct {
 	// @note todo 这里直接采用了sync.Map, 实际应用中可能会遇到性能瓶颈问题,需考虑其他组件,这里为实现功能而直接使用
 	localCache sync.Map // 本地缓存 @note: sync.Map是一个并发安全的键值对存储结构
 
-	capacity int          // 最大缓存容量
-	size     int          // 当前缓存大小
-	head     *LRUNode     // LRU链表头结点
-	tail     *LRUNode     // LRU链表尾节点
-	mutex    sync.RWMutex // 用于保护LRU链表操作的锁
+	capacity int                // 最大缓存容量
+	size     int                // 当前缓存大小
+	head     *LRUNode           // LRU链表头结点
+	tail     *LRUNode           // LRU链表尾节点
+	mutex    sync.RWMutex       // 用于保护LRU链表操作的锁
+	producer *rocketmq.Producer // rocketmq
 }
 
 func NewRDBCache(capacity int) *RDBCache {
@@ -99,8 +103,46 @@ func RedisCoreInit(addr, port, pwd string, db, maxpool, minIdleConns int, maxCon
 	// 初始化LRU缓存
 	RedisCache = NewRDBCache(DEFAULT_LRU_CAPACITY)
 
+	// 初始化rocketmq生产者
+	// @note 暂时把生成者作为成员放在RDBCache结构里,当然也可以提取出来
+	producer, err2 := rocketmq.NewProducer("127.0.0.1:9876", CACHE_TOPIC)
+	if err2 != nil {
+		panic(fmt.Sprintf("MQ生产者初始化失败: %v", err2))
+	}
+	RedisCache.producer = producer
+	// @usage: 如何使用生产者:
+	// msg := rocketmq.NewCacheMessage(key, value, "UPDATE")
+	// RedisCache.producer.SendCacheMessage(ctx, CACHE_TOPIC, msg)
+
+	// 消费者: 负责将Redis保持与MySQL的一致性,同时由于使用了本地缓存,本地缓存还需要和redis保持一致性
+	consumer, err3 := rocketmq.NewConsumer("127.0.0.1:9876", CACHE_TOPIC, CACHE_GROUP_NAME)
+	if err3 != nil {
+		panic(fmt.Sprintf("MQ消费者初始化失败: %v", err3))
+	}
+
+	// 启动消费者线程
+	go func() {
+		consumer.Start(CACHE_TOPIC, func(msg *rocketmq.CacheMessage) error {
+			switch msg.Operation {
+			case "UPDATE":
+				var data any
+				json.Unmarshal(msg.Value.([]byte), &data)
+				// 更新redis
+				RedisCache.SetMultiLevel(ctx, msg.Key, data, DEFAULT_REDIS_CACHE_EXPIRATION, DEFAULT_LOCAL_CACHE_EXPIRATION)
+			case "DELETE":
+				RedisDB.Del(ctx, msg.Key)
+				if value, ok1 := RedisCache.localCache.Load(msg.Key); ok1 {
+					if node, ok := value.(*LRUNode); ok {
+						RedisCache.removeFromCache(msg.Key, node)
+					}
+				}
+			}
+			return nil
+		})
+	}()
+
 	// 启动本地缓存清理任务
-	go RedisCache.startCleanupTask() // 每隔一定时间清理本地缓存,但是在本地缓存数量庞大的时候会有很大的时间消耗
+	go RedisCache.startCleanupTask()
 }
 
 // @brief 检查本地缓存是否过期
